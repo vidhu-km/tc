@@ -2,7 +2,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import calendar
+import os
 from datetime import datetime, timedelta
+import matplotlib.pyplot as plt
 
 # Constants
 BBL_PER_M3 = 6.2898
@@ -11,8 +13,16 @@ DI_ANNUAL = 2.4749435
 DI_DAILY = DI_ANNUAL / 365.0  # daily nominal decline
 
 # 1) Read Excel and expand monthly volumes to daily rates (bbl/d)
-def read_and_expand(file):
-    df = pd.read_excel(file)
+def read_and_expand(file=None, path=None):
+    if path is None and file is None:
+        st.error("No input file provided.")
+        return None
+
+    if path is not None:
+        df = pd.read_excel(path)
+    else:
+        df = pd.read_excel(file)
+
     required = [
         'uwi','year',
         'jan_volume','feb_volume','mar_volume','apr_volume',
@@ -225,16 +235,29 @@ def main():
         "Upload `wellprod.xlsx` with columns: uwi, year, jan_volume, feb_volume, mar_volume, apr_volume, may_volume, jun_volume, jul_volume, aug_volume, sep_volume, oct_volume, nov_volume, dec_volume (volumes in m³)."
     )
 
+    # Determine input source: uploaded file or local wellprod.xlsx
     uploaded = st.file_uploader("Upload wellprod.xlsx", type=["xlsx"])
-    if uploaded is None:
-        st.info("Awaiting file upload.")
+    local_path = "wellprod.xlsx"
+
+    input_source = None
+    if uploaded is not None:
+        input_source = {'type': 'uploaded', 'data': uploaded}
+    elif os.path.exists(local_path):
+        input_source = {'type': 'local', 'path': local_path}
+        st.info(f"Found local file '{local_path}'. It will be loaded automatically.")
+    else:
+        st.info("Awaiting input file. You can upload a file or place 'wellprod.xlsx' in the script folder.")
         return
 
     # 1) Expand to daily series
     with st.spinner("Expanding monthly data to daily rates..."):
-        df_daily = read_and_expand(uploaded)
+        if input_source['type'] == 'uploaded':
+            df_daily = read_and_expand(file=input_source['data'])
+        else:
+            df_daily = read_and_expand(path=input_source['path'])
+
     if df_daily is None or df_daily.empty:
-        st.error("No data found in the uploaded file.")
+        st.error("No data found in the input file.")
         return
 
     # 2) Compute curves (normalize, forecast, and percentile curves)
@@ -269,8 +292,6 @@ def main():
 
     # 4) Plot daily rates and cumulative production
     overlay = st.checkbox("Overlay individual well curves", value=False)
-
-    import matplotlib.pyplot as plt
 
     # Plot 1: Daily rate vs time since peak (P10/P50/P90)
     fig1, ax1 = plt.subplots(figsize=(10, 4))
