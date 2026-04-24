@@ -16,7 +16,7 @@ Q_LIMIT = 5.0
 FLAT_MONTHS = 1.44
 FLAT_DAYS = int(round(FLAT_MONTHS * 30.4375))  # ≈44 days
 DATA_FILE = "tcgenprod.xlsx"
-N_BOOTSTRAP = 5000
+N_BOOTSTRAP = 500
 
 # ══════════════════════════════════════════════════════════════════════════════
 # DECLINE MATH
