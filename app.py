@@ -482,17 +482,6 @@ def main():
                 valid_wells,
                 format_func=lambda x: f"{x}  ({all_results[x]['n_months']} months)",
             )
-        with col_sel2:
-            nav_idx = valid_wells.index(selected_uwi)
-            col_prev, col_next = st.columns(2)
-            with col_prev:
-                if st.button("⬅ Prev", use_container_width=True) and nav_idx > 0:
-                    selected_uwi = valid_wells[nav_idx - 1]
-                    st.rerun()
-            with col_next:
-                if st.button("Next ➡", use_container_width=True) and nav_idx < len(valid_wells) - 1:
-                    selected_uwi = valid_wells[nav_idx + 1]
-                    st.rerun()
 
         info = all_results[selected_uwi]
 
