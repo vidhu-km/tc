@@ -85,7 +85,7 @@ def build_type_curve(qi, di, b, flat_days, q_limit):
 def calc_eur_from_arrays(t_arr, q_arr):
     if len(t_arr) < 2:
         return 0.0
-    return float(np.trapz(q_arr, t_arr))
+    return float(np.trapezoid(q_arr, t_arr))
 
 
 # ══════════════════════════════════════════════════════════════════════════════
