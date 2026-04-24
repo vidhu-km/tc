@@ -124,7 +124,7 @@ def calc_eur_from_curve(t_days, rates):
     """Trapezoidal EUR from arrays of (days, bbl/d)."""
     if len(t_days) < 2:
         return 0.0
-    return float(np.trapz(rates, t_days))
+    return float(np.trapezoid(rates, t_days))
 
 
 # ══════════════════════════════════════════════════════════════════════════════
