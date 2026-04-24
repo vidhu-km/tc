@@ -540,6 +540,12 @@ def main():
         st.pyplot(fig_prod)
         plt.close(fig_prod)
 
+        # ── Normalised decline plot ──
+        st.markdown("#### Normalised Decline (from peak)")
+        fig_norm = plot_well_normalised(info, log_scale=log_scale)
+        st.pyplot(fig_norm)
+        plt.close(fig_norm)
+
         # ── Data table ──
         with st.expander("📄 View raw data for this well"):
             display_df = info['df'][['date', 'rate', 't_days', 'monthly_vol']].copy()
